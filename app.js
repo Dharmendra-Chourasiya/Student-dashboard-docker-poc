@@ -1,68 +1,51 @@
-const sideMenu = document.querySelector("aside");
-const profileBtn = document.querySelector("#profile-btn");
-const themeToggler = document.querySelector(".theme-toggler");
-const nextDay = document.getElementById('nextDay');
-const prevDay = document.getElementById('prevDay');
-
-profileBtn.onclick = function() {
-    sideMenu.classList.toggle('active');
-}
+const elements = {
+    sideMenu: document.querySelector("aside"),
+    profileBtn: document.querySelector("#profile-btn"),
+    themeToggler: document.querySelector(".theme-toggler"),
+    nextDay: document.getElementById('nextDay'),
+    prevDay: document.getElementById('prevDay'),
+    header: document.querySelector('header'),
+    tableBody: document.querySelector('table tbody'),
+    timetableHeading: document.querySelector('.timetable div h2')
+};
+const dayList = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const daysData = { Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday };
+elements.profileBtn.onclick = () => elements.sideMenu.classList.toggle('active');
 window.onscroll = () => {
-    sideMenu.classList.remove('active');
-    if(window.scrollY > 0){document.querySelector('header').classList.add('active');}
-    else{document.querySelector('header').classList.remove('active');}
-}
-
-themeToggler.onclick = function() {
+    elements.sideMenu.classList.remove('active');
+    elements.header.classList.toggle('active', window.scrollY > 0);
+};
+elements.themeToggler.onclick = () => {
     document.body.classList.toggle('dark-theme');
-    themeToggler.querySelector('span:nth-child(1)').classList.toggle('active')
-    themeToggler.querySelector('span:nth-child(2)').classList.toggle('active')
-}
-
-let setData = (day) =>{
-    document.querySelector('table tbody').innerHTML = ' '; //To clear out previous table data;  
-    let daylist = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    document.querySelector('.timetable div h2').innerHTML = daylist[day];
-    switch(day){
-        case(0): day = Sunday; break;
-        case(1): day = Monday; break;
-        case(2): day = Tuesday; break;
-        case(3): day = Wednesday; break;
-        case(4): day = Thursday; break;
-        case(5): day = Friday; break;
-        case(6): day = Saturday; break;
-    }
-
-    day.forEach(sub => {
+    elements.themeToggler.querySelectorAll('span').forEach(span => span.classList.toggle('active'));
+};
+const setData = (day) => {
+    elements.tableBody.innerHTML = '';
+    elements.timetableHeading.textContent = dayList[day];
+    daysData[dayList[day]].forEach(sub => {
         const tr = document.createElement('tr');
-        const trContent = `
-                            <td>${sub.time}</td>
-                            <td>${sub.roomNumber}</td>
-                            <td>${sub.subject}</td>
-                            <td>${sub.type}</td>
-                        `
-        tr.innerHTML = trContent;
-        document.querySelector('table tbody').appendChild(tr)                        
+        tr.innerHTML = `
+            <td>${sub.time}</td>
+            <td>${sub.roomNumber}</td>
+            <td>${sub.subject}</td>
+            <td>${sub.type}</td>
+        `;
+        elements.tableBody.appendChild(tr);
     });
-}
-
-let now = new Date();
-let today = now.getDay(); // Will return the present day in numerical value; 
-let day = today; //To prevent the today value from changing;
-
-function timeTableAll(){
+};
+let day = new Date().getDay();
+const timeTableAll = () => {
     document.getElementById('timetable').classList.toggle('active');
-    setData(today);
-    document.querySelector('.timetable div h2').innerHTML = "Today's Timetable";
-}
-nextDay.onclick = function() {
-    day<=5 ? day++ : day=0;  // If else one liner
     setData(day);
-}
-prevDay.onclick = function() {
-    day>=1 ? day-- : day=6;    
+    elements.timetableHeading.textContent = "Today's Timetable";
+};
+elements.nextDay.onclick = () => {
+    day = day < 6 ? day + 1 : 0;
     setData(day);
-}
-
-setData(day); //To set the data in the table on loading window.
-document.querySelector('.timetable div h2').innerHTML = "Today's Timetable"; //To prevent overwriting the heading on loading;
+};
+elements.prevDay.onclick = () => {
+    day = day > 0 ? day - 1 : 6;
+    setData(day);
+};
+setData(day);
+elements.timetableHeading.textContent = "Today's Timetable";
